@@ -4,15 +4,13 @@ import './App.css';
 
 
 //Default text color
-let defaultTextColor_Green = '#1db954';
+//let defaultTextColor_Green = '#1db954';
 
 //Creating a default style object
 //So now we dont need to style with style = {{}} but just style = {} since this is an object
 let defaultStyle = {
-  color : defaultTextColor_Green
+  color : '#1db954'
 };
-
-
 
 /*  		○ Aggregation Data [Component_B] ○
 * Available as a Tag
@@ -88,7 +86,7 @@ class App extends Component {
       */
     return (
       <div className="App">
-        <h1>Title</h1>
+        <h1 style = {{...defaultStyle, 'font-size': '54px', 'color' : '#1db954'}}>Title</h1>
         <Aggregate/>
         <Aggregate/>
         <Filter/>
