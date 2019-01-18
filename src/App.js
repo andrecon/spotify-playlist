@@ -142,9 +142,12 @@ class Filter extends Component {
   render() {
     return (
       //Default style without extensions
+      //When we press a key up, we want you to call this function and change the text filter
       <div style = {defaultStyle}>
         <img/>
-        <input type= "Text"/>
+        
+        <input type= "Text" onKeyUp= {event => 
+          this.props.onTextChange(event.target.value)}/>
         
       </div>
     );
@@ -184,7 +187,10 @@ class App extends Component {
 
   constructor() {
     super();
-    this.state = {serverData: {}}
+    this.state = {
+        serverData: {},
+        filterString: ''
+    }
   }
   componentDidMount() {
     //After the five seconds, it will execute the function that we passed in
@@ -208,14 +214,24 @@ class App extends Component {
 
           <PlaylistCounter playlists = {this.state.serverData.user.playlists}/>
           <HoursCounter playlists = {this.state.serverData.user.playlists}/>
-          <Filter/>
+
+          {/*Instead of data onTextChange is a function */}
+          <Filter onTextChange = {text => {
+            this.setState({filterString: text})
+          }}/>
           
-          { //If this works, it will print a set of number of Playlist component depending on our Data
-            //Now that we added playlist as an argument, we can manipulate playlist inside Playlist component
-            //As a 'props'. USING MAP (Benefits - Short code and we can do it in-place)
-            this.state.serverData.user.playlists.map( (playlist) => {
+          { /*If this works, it will print a set of number of Playlist component depending on our Data
+            * Now that we added playlist as an argument, we can manipulate playlist inside Playlist component
+            * As a 'props'. USING MAP (Benefits - Short code and we can do it in-place)
+            * Filter() accept one argument, a function
+            */
+            this.state.serverData.user.playlists.filter(playlist=>
+              playlist.name.toLowerCase().includes(
+                this.state.filterString.toLocaleLowerCase())
+            ).map( (playlist) => {
               return <Playlist playlist = {playlist}/>
-            } )}
+            })
+          }
           
           
         </div> :  <h1 style = {defaultStyle} > Loading... </h1>
