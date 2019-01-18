@@ -16,9 +16,11 @@ let defaultStyle = {
 // Comming up with madeup data
 let fakeServerData = {
   user : {
-    name : 'Andy',
+    name : 'User',
+    //Array of Playlists
     playlists : [
       {
+        //Properties
         name : 'Wanderlust',
         //Creating object literals with a name property and a duration property
         songs: [{name: 'Wanderlust', duration: 181},
@@ -93,22 +95,22 @@ class HoursCounter extends Component {
       let allSongs = this.props.playlists.reduce( (songs, eachPlaylist) => {
         //Putting all songs in songs to eachPlaylist.songs
         return songs.concat(eachPlaylist.songs)
-       },[])
+       },[]);
       
        //All this converts seconds to hours and minutes... if the hours value is less than and hour
        //the we just add it into the minutes
        let totalSeconds = allSongs.reduce((sum,eachSong) => {
-         return sum + eachSong.duration
+         return sum + eachSong.duration;
        }, 0)
        
-       let totalMinutes = totalSeconds/60
-       let totalHours = totalMinutes/60
+       let totalMinutes = totalSeconds/60;
+       let totalHours = totalMinutes/60;
 
        if(totalHours < 1)
        {
-         totalMinutes += totalHours
+         totalMinutes += totalHours;
        }
-      totalMinutes = Math.round(totalMinutes)
+      totalMinutes = Math.round(totalMinutes);
 
     return (
       /*This is a SubHeader
@@ -121,7 +123,7 @@ class HoursCounter extends Component {
           {totalHours < 1 ? 
               <div> {totalMinutes}m </div>
               :
-              <div style ={{displya: 'inline-block'}} > {Math.round(totalHours)}h {totalMinutes}m </div>
+              <div style ={{display: 'inline-block'}} > {Math.round(totalHours)}h {totalMinutes}m </div>
           }
         </h2>
       </div>
@@ -158,15 +160,19 @@ class Filter extends Component {
 */
 class Playlist extends Component {
   render() {
+
+    let playlist = this.props.playlist;
+
     return (
       //Default style extended with width and displya styles
       <div style = {{...defaultStyle, width: "25%", display: 'inline-block'}}>
         <img />
-        <h3> Playlist Name</h3>
+        <h3> {playlist.name}</h3>
         <ul>
-          <li> Song 1 </li>
-          <li> Song 2 </li>
-          <li> Song 2 </li>
+          {//For every song, print out a list with the name
+            this.props.playlist.songs.map(song => 
+              <li> {song.name} </li>
+          )}
         </ul>
       </div>
     );
@@ -203,10 +209,15 @@ class App extends Component {
           <PlaylistCounter playlists = {this.state.serverData.user.playlists}/>
           <HoursCounter playlists = {this.state.serverData.user.playlists}/>
           <Filter/>
-          <Playlist/>
-          <Playlist/>
-          <Playlist/>
-          <Playlist/>
+          
+          { //If this works, it will print a set of number of Playlist component depending on our Data
+            //Now that we added playlist as an argument, we can manipulate playlist inside Playlist component
+            //As a 'props'. USING MAP (Benefits - Short code and we can do it in-place)
+            this.state.serverData.user.playlists.map( (playlist) => {
+              return <Playlist playlist = {playlist}/>
+            } )}
+          
+          
         </div> :  <h1 style = {defaultStyle} > Loading... </h1>
         }
         </div>
