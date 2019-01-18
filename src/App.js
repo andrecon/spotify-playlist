@@ -200,6 +200,17 @@ class App extends Component {
 }
 
   render() {
+
+      /*This function is our filtering data that changes the resuts in our screen
+      * At first, it will return an empty string '[]' but once we input something into the 
+      * filter box, everything from number of playlits, time and playlist results will be 
+      * updated based on our search results
+      */
+      let playlistToRender = this.state.serverData.user ? this.state.serverData.user.playlists.filter(playlist =>
+        playlist.name.toLowerCase().includes(
+          this.state.filterString.toLocaleLowerCase())
+      ) : []
+
       /*
       * Two ways of calling Tag
       * <Aggregate/> or <Aggregate> </Aggregate>
@@ -212,8 +223,8 @@ class App extends Component {
             {this.state.serverData.user.name}'s Playlist 
           </h1>
 
-          <PlaylistCounter playlists = {this.state.serverData.user.playlists}/>
-          <HoursCounter playlists = {this.state.serverData.user.playlists}/>
+          <PlaylistCounter playlists = {playlistToRender}/>
+          <HoursCounter playlists = {playlistToRender}/>
 
           {/*Instead of data onTextChange is a function */}
           <Filter onTextChange = {text => {
@@ -225,10 +236,7 @@ class App extends Component {
             * As a 'props'. USING MAP (Benefits - Short code and we can do it in-place)
             * Filter() accept one argument, a function
             */
-            this.state.serverData.user.playlists.filter(playlist=>
-              playlist.name.toLowerCase().includes(
-                this.state.filterString.toLocaleLowerCase())
-            ).map( (playlist) => {
+           playlistToRender.map( (playlist) => {
               return <Playlist playlist = {playlist}/>
             })
           }
