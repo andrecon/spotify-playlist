@@ -20,23 +20,31 @@ let fakeServerData = {
     playlists : [
       {
         name : 'Wanderlust',
-        songs: ['Wanderlust','Rocketman (feat. Atlas & Lando!)']
+        //Creating object literals with a name property and a duration property
+        songs: [{name: 'Wanderlust', duration: 181},
+          {name: 'Rocketman (feat. Atlas & Lando!)', duration: 153}]
       },
 
       {
         name : 'Crescendo',
-        songs: ['Sunroof','Bout it (feat. Daniel James & Benjamin O)', 'Kid Again']
+        songs: [{name: 'Sunroof', duration: 215},
+           {name:'Bout it (feat. Daniel James & Benjamin O)', duration: 254},
+           {name: 'Kid Again', duration: 201}]
 
       },
 
       {
         name : 'Lock My Door',
-        songs: ['The Glo','Polaroids', 'throwback (feat. Saba)'] 
+        songs: [{name: 'The Glo', duration: 201},
+          {name: 'Polaroids', duration: 263},
+          {name: 'throwback (feat. Saba)', duration: 152}] 
       },
 
       { 
         name : 'Best For You',
-        songs: ['Coming back','Stay focus', 'Waves']
+        songs: [{name: 'Coming back', duration: 146},
+          {name: 'Stay focus', duration: 247},
+          {name: 'Waves', duration: 188}]
       }
     ]
   }
@@ -47,7 +55,7 @@ let fakeServerData = {
 * Available as a Tag
 * Divs are block by default. 'inline-block' will help us make it look more smooth 
 */
-class Aggregate extends Component {
+class PlaylistCounter extends Component {
   //Playlist will be available and passed in this component as 'props' so instead of calling
   // this.state.serverData.user.playlists.lengh we narrow it down to this.props.playlists
   render() {
@@ -60,13 +68,68 @@ class Aggregate extends Component {
       */
       <div style = {{...defaultStyle, width: '40%', display: 'inline-block'}}>
         <h2>
-          {this.props.playlists && this.props.playlists.length} Text
+          {this.props.playlists && this.props.playlists.length} Playlists
         </h2>
       </div>
       //This returns some HTML with some styling
       );
   }
 }
+
+/*  		○ Aggregation Data [Component_B] ○
+* Available as a Tag
+* Divs are block by default. 'inline-block' will help us make it look more smooth 
+*/
+class HoursCounter extends Component {
+  //Playlist will be available and passed in this component as 'props' so instead of calling
+  // this.state.serverData.user.playlists.lengh we narrow it down to this.props.playlists
+  render() {
+
+      //Creating a list of all the songs (Getting all the songs in one lists)
+      //Advance functional programming concept called Reduce, reduces soemthing to a single value
+      //Reducing a playlist, to a list of songs 
+      // reduce( , Initial state of the reduce) - Empty list []
+      // reduce( takes a function(), Initial state of the reduce) 
+      let allSongs = this.props.playlists.reduce( (songs, eachPlaylist) => {
+        //Putting all songs in songs to eachPlaylist.songs
+        return songs.concat(eachPlaylist.songs)
+       },[])
+      
+       //All this converts seconds to hours and minutes... if the hours value is less than and hour
+       //the we just add it into the minutes
+       let totalSeconds = allSongs.reduce((sum,eachSong) => {
+         return sum + eachSong.duration
+       }, 0)
+       
+       let totalMinutes = totalSeconds/60
+       let totalHours = totalMinutes/60
+
+       if(totalHours < 1)
+       {
+         totalMinutes += totalHours
+       }
+      totalMinutes = Math.round(totalMinutes)
+
+    return (
+      /*This is a SubHeader
+      * style= {Here} <--- JavaScript part
+      * style= {{Here}} <-- JavaScript Object
+      * Default style with extension of width and display
+      */
+      <div style = {{...defaultStyle, width: '40%', display: 'inline-block'}}>
+        <h2>
+          {totalHours < 1 ? 
+              <div> {totalMinutes}m </div>
+              :
+              <div style ={{displya: 'inline-block'}} > {Math.round(totalHours)}h {totalMinutes}m </div>
+          }
+        </h2>
+      </div>
+      //This returns some HTML with some styling
+      );
+  }
+}
+
 
 /*  		○ Filter [Component_C] ○
 *  Calls the JavaScript feature that doesnt really exist (Object Spread Operator)
@@ -121,7 +184,7 @@ class App extends Component {
     //After the five seconds, it will execute the function that we passed in
     setTimeout(() =>{
     this.setState({serverData: fakeServerData});
-  }, 2000);
+  }, 1000);
 }
 
   render() {
@@ -137,8 +200,8 @@ class App extends Component {
             {this.state.serverData.user.name}'s Playlist 
           </h1>
 
-          <Aggregate playlists = {this.state.serverData.user.playlists}/>
-          <Aggregate/>
+          <PlaylistCounter playlists = {this.state.serverData.user.playlists}/>
+          <HoursCounter playlists = {this.state.serverData.user.playlists}/>
           <Filter/>
           <Playlist/>
           <Playlist/>
